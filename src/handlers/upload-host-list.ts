@@ -1,17 +1,33 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Upload host list", data: "upload:host_list" }) if the toolkit exposes it.
-
-const composer = new Composer();
+const composer = new Composer<Ctx>();
 
 composer.callbackQuery("upload:host_list", async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Submit newline-separated host list for scanning");
+  const status = ctx.session.approvalStatus;
+  if (status !== "approved") {
+    await ctx.editMessageText(
+      "You need access to upload host lists. Request approval first.",
+      {
+        reply_markup: inlineKeyboard([
+          [inlineButton("🔐 Request Access", "register:request")],
+          [inlineButton("⬅️ Back to menu", "menu:main")],
+        ]),
+      },
+    );
+    return;
+  }
+  ctx.session.step = "awaiting_hosts";
+  await ctx.editMessageText(
+    "Send your host list (one host per line, or comma-separated).\n\nExamples:\nexample.com\n1.2.3.4, 5.6.7.8",
+    {
+      reply_markup: inlineKeyboard([
+        [inlineButton("⬅️ Back to menu", "menu:main")],
+      ]),
+    },
+  );
 });
 
 export default composer;

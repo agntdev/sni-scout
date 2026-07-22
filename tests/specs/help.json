@@ -8,7 +8,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "ℹ️ Tap /start to open the menu, then pick what you want from the buttons.\n\nEverything in this bot is reachable by tapping — you don't need to remember any commands."
+              "text": "SNI Scanner discovers reachable SNI values and TLS configurations on public hosts.\n\nHow it works:\n1. Request access (admin approval required)\n2. Upload a list of public hosts\n3. Run a scan and get results\n\nTap /start to open the menu."
             }
           }
         ]
