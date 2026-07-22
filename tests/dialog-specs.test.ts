@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { buildBot } from "../src/bot";
 import { formatSuiteResult, parseBotSpecs, runSpecs } from "../src/toolkit/harness/run-specs";
-import { _setupTestAdmins } from "../src/admin-store.js";
+import { _setupTestAdmins } from "../src/admin-store";
 
 // THE PUBLISH GATE replays every tests/specs/*.json against your built bot via the
 // toolkit harness, and fails the build on any mismatch. This test runs the SAME
@@ -20,10 +20,10 @@ describe("dialog specs (the publish gate replays these)", () => {
     if (!existsSync(SPECS_DIR)) return; // no specs authored yet
     const files = readdirSync(SPECS_DIR).filter((f) => f.endsWith(".json"));
     if (files.length === 0) return;
+    _setupTestAdmins([1]);
     const specs = files.flatMap((f) =>
       parseBotSpecs(JSON.parse(readFileSync(join(SPECS_DIR, f), "utf8"))),
     );
-    _setupTestAdmins([1]);
     const suite = await runSpecs(() => buildBot("123456:TEST"), specs);
     expect(suite.failed, "\n" + formatSuiteResult(suite)).toBe(0);
   });
