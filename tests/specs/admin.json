@@ -1,0 +1,226 @@
+[
+  {
+    "name": "/admin shows admin menu for admin users",
+    "steps": [
+      {
+        "send": { "text": "/admin", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Admin settings\n\nAdmins: 1\nDefault max depth: 3\nNotifications: Chat only\nApproval workflow: On\n\nTap an option to change it." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:menu shows access required for non-admin",
+    "steps": [
+      {
+        "send": { "callback": "admin:menu", "userId": 999 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Admin access required. Only designated admins can use this command." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:admins shows admin list",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Admin users:\n\n1. 1\n\nTap an option below." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:admins:add prompts for input",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins:add", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Send the Telegram username (e.g. @username) or numeric user ID to add as admin." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "adding admin by username works",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins:add", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Send the Telegram username (e.g. @username) or numeric user ID to add as admin." } }
+        ]
+      },
+      {
+        "send": { "text": "@alice", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Admin 1092903040 added." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "adding admin by numeric ID works",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins:add", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Send the Telegram username (e.g. @username) or numeric user ID to add as admin." } }
+        ]
+      },
+      {
+        "send": { "text": "42", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Admin 42 added." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "invalid username format shows error",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins:add", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Send the Telegram username (e.g. @username) or numeric user ID to add as admin." } }
+        ]
+      },
+      {
+        "send": { "text": "ab", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Invalid format. Send a @username or numeric user ID." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "duplicate admin shows already exists",
+    "steps": [
+      {
+        "send": { "callback": "admin:admins:add", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Send the Telegram username (e.g. @username) or numeric user ID to add as admin." } }
+        ]
+      },
+      {
+        "send": { "text": "1", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "1 is already an admin." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:scan_limits shows current depth",
+    "steps": [
+      {
+        "send": { "callback": "admin:scan_limits", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Scan limits:\n\nDefault max depth: 3" } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "changing scan depth works",
+    "steps": [
+      {
+        "send": { "callback": "admin:scan_limits:depth", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Enter the new default max scan depth (1–5)." } }
+        ]
+      },
+      {
+        "send": { "text": "5", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Default scan depth updated to 5." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "invalid scan depth shows error",
+    "steps": [
+      {
+        "send": { "callback": "admin:scan_limits:depth", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Enter the new default max scan depth (1–5)." } }
+        ]
+      },
+      {
+        "send": { "text": "10", "userId": 1 },
+        "expect": [
+          { "method": "sendMessage", "payload": { "text": "Invalid depth. Enter a number 1–5." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:notifications shows current setting",
+    "steps": [
+      {
+        "send": { "callback": "admin:notifications", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Notification target:\n\nCurrent: User's Telegram chat only" } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "changing notifications to chat_and_channel works",
+    "steps": [
+      {
+        "send": { "callback": "admin:notif:set:chat_and_channel", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Notifications updated to: Chat and channel." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "admin:approval shows current setting",
+    "steps": [
+      {
+        "send": { "callback": "admin:approval", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Approval workflow:\n\nCurrent: Enabled" } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "cancelling approval toggle reverts",
+    "steps": [
+      {
+        "send": { "callback": "admin:approval:toggle", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Set approval workflow to Disabled?" } }
+        ]
+      },
+      {
+        "send": { "callback": "admin:confirm_approval:no", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Change cancelled." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "confirming approval toggle applies change",
+    "steps": [
+      {
+        "send": { "callback": "admin:approval:toggle", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Set approval workflow to Disabled?" } }
+        ]
+      },
+      {
+        "send": { "callback": "admin:confirm_approval:yes", "userId": 1 },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Approval workflow updated to: Disabled." } }
+        ]
+      }
+    ]
+  }
+]
