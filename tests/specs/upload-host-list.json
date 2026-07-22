@@ -1,19 +1,17 @@
 [
   {
-    "name": "Upload host list",
+    "name": "Upload host list shows access required for unapproved user",
     "steps": [
       {
+        "send": { "callback": "upload:host_list" },
         "expect": [
           {
-            "method": "sendMessage",
+            "method": "editMessageText",
             "payload": {
-              "text": "Submit newline-separated host list for scanning"
+              "text": "You need access to upload host lists. Request approval first."
             }
           }
-        ],
-        "send": {
-          "callback": "upload:host_list"
-        }
+        ]
       }
     ]
   }

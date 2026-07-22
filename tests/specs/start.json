@@ -1,13 +1,79 @@
 [
   {
-    "name": "/start replies with the welcome + main menu",
+    "name": "/start shows registration for new users",
     "steps": [
       {
         "send": { "text": "/start" },
         "expect": [
           {
             "method": "sendMessage",
-            "payload": { "text": "👋 Welcome! Tap a button below to get started." }
+            "payload": {
+              "text": "Tap \"Request Access\" below to request admin approval. Once approved, you can scan public hosts."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "register:request shows pending approval",
+    "steps": [
+      {
+        "send": { "callback": "register:request" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Access requested. An admin will review your request.\n\nYou'll be notified once approved."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "register:pending shows pending status",
+    "steps": [
+      {
+        "send": { "callback": "register:pending" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Your access request is pending. You'll be notified once approved."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "scan:menu shows access required for unapproved users",
+    "steps": [
+      {
+        "send": { "callback": "scan:menu" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "You need access to scan hosts. Request approval first."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "history:show shows access required for unapproved users",
+    "steps": [
+      {
+        "send": { "callback": "history:show" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "You need access to view scan history. Request approval first."
+            }
           }
         ]
       }

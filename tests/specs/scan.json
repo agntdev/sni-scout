@@ -1,19 +1,49 @@
 [
   {
-    "name": "/scan",
+    "name": "/scan without access shows error",
     "steps": [
       {
+        "send": { "text": "/scan" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Initiate scan with optional parameters"
+              "text": "You need access to scan hosts. Use /start to request approval."
             }
           }
-        ],
-        "send": {
-          "text": "/scan"
-        }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "/scan with invalid depth and no access shows access error",
+    "steps": [
+      {
+        "send": { "text": "/scan 10" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "You need access to scan hosts. Use /start to request approval."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "scan:confirm:no cancels scan",
+    "steps": [
+      {
+        "send": { "callback": "scan:confirm:no" },
+        "expect": [
+          {
+            "method": "editMessageText",
+            "payload": {
+              "text": "Scan cancelled."
+            }
+          }
+        ]
       }
     ]
   }
