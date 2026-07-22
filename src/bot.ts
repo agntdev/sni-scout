@@ -17,6 +17,9 @@ export interface Session {
     resultCount: number;
     reachableCount: number;
   }>;
+  adminStep?: "idle" | "awaiting_admin_add" | "awaiting_depth_input";
+  pendingRemoveAdminId?: number;
+  pendingApprovalToggle?: boolean;
 }
 
 export type Ctx = BotContext<Session>;

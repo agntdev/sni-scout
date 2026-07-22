@@ -1,11 +1,12 @@
 import { Composer } from "grammy";
 import type { Ctx } from "../bot.js";
 import {
-  mainMenuKeyboard,
+  mainMenuItems,
   inlineButton,
   inlineKeyboard,
 } from "../toolkit/index.js";
 import { registerMainMenuItem } from "../toolkit/index.js";
+import { isAdmin } from "../admin-store.js";
 
 registerMainMenuItem({
   label: "🔍 Scan",
@@ -37,6 +38,18 @@ const PENDING_MENU =
 const WELCOME_NEW =
   "Tap \"Request Access\" below to request admin approval. Once approved, you can scan public hosts.";
 
+function buildFilteredMenu(userId?: number) {
+  const items = mainMenuItems().filter(
+    (item) => item.data !== "admin:menu" || (userId != null && isAdmin(userId)),
+  );
+  const rows: { text: string; data: string }[][] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    rows.push(items.slice(i, i + 2).map((it) => ({ text: it.label, data: it.data })));
+  }
+  rows.push([{ text: "❓ Help", data: "menu:help" }]);
+  return inlineKeyboard(rows.map((row) => row.map((b) => inlineButton(b.text, b.data))));
+}
+
 function buildMenu(ctx: Ctx) {
   const status = ctx.session.approvalStatus;
   if (status === "approved") return APPROVED_MENU;
@@ -47,7 +60,7 @@ function buildMenu(ctx: Ctx) {
 composer.command("start", async (ctx) => {
   const status = ctx.session.approvalStatus;
   if (status === "approved") {
-    await ctx.reply(APPROVED_MENU, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(APPROVED_MENU, { reply_markup: buildFilteredMenu(ctx.from?.id) });
   } else if (status === "pending") {
     await ctx.reply(PENDING_MENU, {
       reply_markup: inlineKeyboard([
@@ -70,7 +83,7 @@ composer.callbackQuery("menu:main", async (ctx) => {
   const text = buildMenu(ctx);
   const status = ctx.session.approvalStatus;
   if (status === "approved") {
-    await ctx.editMessageText(text, { reply_markup: mainMenuKeyboard() });
+    await ctx.editMessageText(text, { reply_markup: buildFilteredMenu(ctx.from?.id) });
   } else if (status === "pending") {
     await ctx.editMessageText(text, {
       reply_markup: inlineKeyboard([
